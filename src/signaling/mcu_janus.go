@@ -143,6 +143,11 @@ type mcuJanus struct {
 
 	maxStreamBitrate int
 	maxScreenBitrate int
+	videoCodec string
+	audioCodec string
+	videoSvc bool
+	vp9Profile string
+	h264Profile string
 	mcuTimeout       time.Duration
 
 	gw      *JanusGateway
@@ -180,6 +185,13 @@ func NewMcuJanus(url string, config *goconf.ConfigFile, nats NatsClient) (Mcu, e
 	if mcuTimeoutSeconds <= 0 {
 		mcuTimeoutSeconds = defaultMcuTimeoutSeconds
 	}
+	videoCodec, _ := config.GetString("mcu", "videocodec")
+	audioCodec, _ := config.GetString("mcu", "audiocodec")
+	vp9Profile, _ := config.GetString("mcu", "vp9_profile")
+	h264Profile, _ := config.GetString("mcu", "h264_profile")
+	videoSvc, _ := config.GetBool("mcu", "video_svc")
+
+
 	mcuTimeout := time.Duration(mcuTimeoutSeconds) * time.Second
 
 	mcu := &mcuJanus{
@@ -191,7 +203,11 @@ func NewMcuJanus(url string, config *goconf.ConfigFile, nats NatsClient) (Mcu, e
 		closeChan:        make(chan bool, 1),
 		clients:          make(map[clientInterface]bool),
 		publisherRoomIds: make(map[string]uint64),
-
+		videoCodec:		  videoCodec,
+		audioCodec:		  audioCodec,
+		videoSvc:		  videoSvc,
+		vp9Profile:		  vp9Profile,
+		h264Profile:		  h264Profile,
 		reconnectInterval: initialReconnectInterval,
 	}
 	mcu.onConnected.Store(emptyOnConnected)
@@ -601,6 +617,21 @@ func (m *mcuJanus) getOrCreatePublisherHandle(ctx context.Context, id string, st
 			create_msg["bitrate"] = m.maxScreenBitrate
 		} else {
 			create_msg["bitrate"] = m.maxStreamBitrate
+		}
+		if m.videoCodec != "" {
+			create_msg["videocodec"] = m.videoCodec
+		}
+		if m.audioCodec != "" {
+			create_msg["audiocodec"] = m.audioCodec
+		}
+		if m.vp9Profile != "" {
+			create_msg["vp9_profile"] = m.vp9Profile
+		}
+		if m.h264Profile != "" {
+			create_msg["h264_profile"] = m.h264Profile
+		}
+		if m.videoSvc {
+			create_msg["video_svc"] = m.videoSvc
 		}
 		create_response, err := handle.Request(ctx, create_msg)
 		if err != nil {
