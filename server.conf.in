@@ -116,6 +116,22 @@ url =
 # Default is 2 mbit/sec.
 #maxscreenbitrate = 2097152
 
+# videocodec = vp8|vp9|h264|av1|h265 (video codec(s) to force on publishers, default=vp8
+videocodec = vp8
+
+# audiocodec = opus|g722|pcmu|pcma|isac32|isac16 (audio codec(s) to force on publishers, default=opus
+#audiocodec = opus
+
+# vp9_profile = VP9-specific profile to prefer (e.g., "2" for "profile-id=2")
+#vp9_profile = 0
+
+# h264_profile = H.264-specific profile to prefer (e.g., "42e01f" for "profile-level-id=42e01f")
+#h264_profile = 42e01f
+
+# video_svc = true|false (whether SVC support must be enabled; only works for VP9, default=false)
+#video_svc = true
+
+
 # For type "proxy": the id of the token to use when connecting to proxy servers.
 #token_id = server1
 
